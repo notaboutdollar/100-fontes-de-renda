@@ -46,6 +46,15 @@ ul{padding-left:20px;font-size:clamp(.98rem,1.8vw,1.18rem);line-height:1.6}li{ma
 #ov h3{font:800 1.8rem Fraunces,serif;margin:0 0 16px}#ov .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
 #ov a{display:block;background:var(--paper);border:1.5px solid var(--line2);border-radius:10px;padding:10px;font-size:.85rem;color:var(--ink);text-decoration:none;cursor:pointer}#ov a:hover{border-color:var(--ink)}#ov a.cur{border:2px solid var(--ink);background:var(--acs);box-shadow:var(--shs)}#ov a.sec{grid-column:1/-1;font:700 .8rem 'JetBrains Mono',monospace;text-transform:uppercase;background:var(--ink);color:#fff;border-color:var(--ink);margin-top:8px}
 @media(max-width:700px){.toc,.m{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stats div:last-child{grid-column:1/-1}.s{align-items:flex-start;padding:72px 20px 100px}.ui{left:16px;right:16px;justify-content:flex-end}.ui button{flex:1;padding:13px}.m div{padding:12px}#sec{font-size:.66rem}}
+.in.w{max-width:1280px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}.cards.c2{grid-template-columns:repeat(2,1fr);max-width:900px}
+.it{background:var(--paper);border:2px solid var(--ink);border-radius:14px;box-shadow:var(--sh);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.ih{display:flex;gap:10px;align-items:flex-start}.nb{flex:none;font:800 .95rem 'JetBrains Mono',monospace;background:var(--ac);color:#fff;border:2px solid var(--ink);border-radius:8px;padding:4px 8px}
+.it h3{font:800 1.12rem/1.2 Fraunces,serif;margin:2px 0 0;overflow-wrap:anywhere}.it p{margin:0;font-size:.92rem;line-height:1.5;color:#222}
+.fp{background:var(--acs);border:1.5px solid var(--ink);border-radius:10px;padding:9px 11px;font-size:.86rem;line-height:1.45}.fp b{color:var(--ac2)}
+.it dl{margin:auto 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.it dl div{border:1.5px solid var(--line2);border-radius:8px;padding:6px 7px;min-width:0}.it dt{font:600 .62rem 'JetBrains Mono',monospace;text-transform:uppercase;color:var(--mu)}.it dd{margin:2px 0 0;font-weight:700;font-size:.82rem;overflow-wrap:anywhere}
+.big{margin-bottom:10px!important}
+@media(max-width:1000px){.cards,.cards.c2{grid-template-columns:1fr}}
+@media(max-width:700px){.in.w .kick{font-size:.68rem}.ui{bottom:0;left:0;right:0;padding:12px 16px 16px;background:linear-gradient(transparent,var(--bg) 40%)}.s{padding-bottom:110px}}
 </style></head><body><div id="top"><span id="sec"></span><button id="bo" title="Índice (O)">☰ Índice</button><span id="cnt"></span><div id="trk"><div id="bar"></div></div></div><div id="deck"></div>
 <div class="ui"><button id="bp" aria-label="Anterior">←</button><button id="bn" aria-label="Próximo">→</button></div>
 <div id="ov"><h3>Índice <small style="font:500 .8rem JetBrains Mono,monospace;color:var(--mu)">O / Esc fecha</small></h3><div class="gr" id="ovg"></div></div>
@@ -61,10 +70,11 @@ add('Avisos importantes',`<h2>⚠️ Avisos importantes</h2><div class="warn">Na
 const tocAt=S.length;add('Sumário','',1);const secIdx=[];
 C.forEach((c,i)=>{const it=D.filter(d=>d.cat==c);secIdx.push(S.length);
 add(`${i+1}. ${c}`,`<div class="big">${String(i+1).padStart(2,'0')}</div><div class="kick">Categoria ${i+1} de ${C.length}</div><h1>${e(c)}</h1><p class="lead">Itens ${it[0].n}–${it.at(-1).n}</p>`,1);
-it.forEach(d=>add(`${d.n}. ${d.t}`,`<div class="kick">${i+1}. ${e(c)}</div><div class="num g">${d.n}</div><h2>${e(d.t)}</h2><p class="desc">${e(d.d)}</p><div class="pp"><b>Primeiro passo:</b> ${e(d.p)}</div><div class="m"><div><small>💰 Investimento inicial</small><b>${e(d.inv)}</b></div><div><small>⏱ Tempo até a primeira renda</small><b>${e(d.tempo)}</b></div><div><small>📈 Potencial</small><b>${e(d.pot)}</b></div></div>`))});
+{const P=Math.ceil(it.length/3),base=Math.floor(it.length/P),ex=it.length%P;let k=0;for(let p=0;p<P;p++){const g=it.slice(k,k+=base+(p<ex?1:0));
+add(`${g[0].n}–${g.at(-1).n}. ${g.map(d=>d.t).join(' · ')}`,`<div class="kick">${i+1}. ${e(c)} · página ${p+1} de ${P}</div><div class="cards c${g.length}">`+g.map(d=>`<article class="it"><div class="ih"><span class="nb">${d.n}</span><h3>${e(d.t)}</h3></div><p>${e(d.d)}</p><div class="fp"><b>Primeiro passo:</b> ${e(d.p)}</div><dl><div><dt>💰 Invest.</dt><dd>${e(d.inv)}</dd></div><div><dt>⏱ 1ª renda</dt><dd>${e(d.tempo)}</dd></div><div><dt>📈 Potencial</dt><dd>${e(d.pot)}</dd></div></dl></article>`).join('')+`</div>`)}}});
 S[tocAt].h=`<h2>Sumário</h2><div class="toc">`+C.map((c,i)=>{const it=D.filter(d=>d.cat==c);return`<a data-go="${secIdx[i]}">${i+1}. ${e(c)} <small>(itens ${it[0].n}–${it.at(-1).n})</small></a>`}).join('')+`</div>`;
 add('Encerramento',`<h1><span class="g">${e(TOT.split('.')[0])}.</span></h1><p class="lead">${e(TOT.split('. ').slice(1).join('. '))}</p><p class="lead">Nada aqui é recomendação de investimento.</p>`,1);
-$('#deck').innerHTML=S.map(s=>`<section class="s"><div class="in">${s.h}</div></section>`).join('');
+$('#deck').innerHTML=S.map(s=>`<section class="s"><div class="in${s.h.includes('class="cards')?' w':''}">${s.h}</div></section>`).join('');
 $('#ovg').innerHTML=S.map((s,i)=>`<a data-go="${i}" class="${s.sec?'sec':''}">${i+1}. ${e(s.lab)}</a>`).join('');
 const els=[...document.querySelectorAll('.s')];let cur=0;
 function go(n){n=Math.max(0,Math.min(S.length-1,n));cur=n;els.forEach((el,i)=>{el.classList.toggle('on',i==n);el.classList.toggle('prev',i<n)});
